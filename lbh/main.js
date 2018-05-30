@@ -2,6 +2,8 @@ phina.globalize();
 
 const QUESTION_TIME = 1.5 * 1000;
 const ANSWER_TIME = 1.5 * 1000;
+const ADDITION = 0;
+const SUBSTRACTION = 1;
 
 phina.define('TitleScene', {
   superClass: 'DisplayScene',
@@ -9,23 +11,60 @@ phina.define('TitleScene', {
   init: function(params) {
     this.superInit(params);
 
+    var self = this;
+
     this.backgroundColor = '#93deff';
 
     var titleLabel = Label('四則計算暗記アプリ').addChildTo(this);
     titleLabel.setPosition(this.gridX.center(), this.gridY.center()/2);
     titleLabel.fontSize = 64;
+    titleLabel.fill = '#ffffff';
     this.titleLabel = titleLabel;
 
-    var startBtn = TriangleShape().addChildTo(this);
-    startBtn.setPosition(this.gridX.center(), this.gridY.center()*1.5);
-    startBtn.setScale(2, 2);
-    startBtn.rotation = 90;
-    startBtn.fill = '#606470';
+    var startLabel = Label('ボタンをタッチしてスタート').addChildTo(this);
+    startLabel.setPosition(this.gridX.center(), this.gridY.center());
+    startLabel.fontSize = 32;
+    startLabel.fill = '#ffffff';
+    this.startLabel = startLabel;
 
-    var self = this;
+    var additionBtn = Button({
+      x: this.gridX.center(),
+      y: this.gridY.center() * 1.25,
+      width: 200,
+      height: 100,
+      text: '足し算',
+      fontSize: 32,
+      fontColor: '#000000',
+      cornerRadius: 10,
+      fill: '#ffffff',
+      stroke: '#000000',
+      strokeWidth: 5,
+    }).addChildTo(this);
 
-    this.onpointstart = function() {
-      self.exit();
+    additionBtn.onpointstart = function() {
+      self.exit({
+        operationType: ADDITION,
+      });
+    };
+
+    var subtractionBtn = Button({
+      x: this.gridX.center(),
+      y: this.gridY.center() * 1.5,
+      width: 200,
+      height: 100,
+      text: '引き算',
+      fontSize: 32,
+      fontColor: '#000000',
+      cornerRadius: 10,
+      fill: '#ffffff',
+      stroke: '#000000',
+      strokeWidth: 5,
+    }).addChildTo(this);
+
+    subtractionBtn.onpointstart = function() {
+      self.exit({
+        operationType: SUBSTRACTION,
+      });
     };
   }
 });
@@ -42,6 +81,8 @@ phina.define('MainScene', {
     this.answerTimer = ANSWER_TIME;
 
     this.count = 0;
+
+    this.operationType = params.operationType;
 
     this.setRandomNumber();
 
@@ -73,10 +114,17 @@ phina.define('MainScene', {
   },
 
   setRandomNumber: function() {
-    var rnd1 = Random.randint(1, 9);
-    var rnd2 = Random.randint(1, 9);
-    var question = rnd1 + ' + ' + rnd2;
-    this.answer = rnd1 + rnd2;
+    if (this.operationType === ADDITION) {
+      var rnd1 = Random.randint(1, 9);
+      var rnd2 = Random.randint(1, 9);
+      var question = rnd1 + ' + ' + rnd2;
+      this.answer = rnd1 + rnd2;
+    } else if (this.operationType === SUBSTRACTION) {
+      var rnd1 = Random.randint(1, 9);
+      var rnd2 = Random.randint(1, rnd1);
+      var question = rnd1 + ' - ' + rnd2;
+      this.answer = rnd1 - rnd2;
+    }
 
     var questionLabel = Label(question).addChildTo(this);
     questionLabel.setPosition(this.gridX.center(), this.gridY.center());
@@ -107,8 +155,8 @@ phina.define('ResultScene', {
     countLabel.fontSize = 128;
     this.countLabel = countLabel;
 
-    var messageLabel = Label('答えました\nおつかれさま\n＼(^o^)／').addChildTo(this);
-    messageLabel.setPosition(this.gridX.center(), this.gridY.center());
+    var messageLabel = Label('答えました\nおつかれさま\n\n＼(^o^)／').addChildTo(this);
+    messageLabel.setPosition(this.gridX.center(), this.gridY.center() + 50);
     messageLabel.fontSize = 64;
     this.messageLabel = messageLabel;
 
