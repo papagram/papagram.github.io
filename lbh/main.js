@@ -219,6 +219,8 @@ phina.define('MainScene', {
     this.operationType = params.operationType;
     this.level = params.level;
 
+    this.multiplication = Multiplication();
+
     this.setRandomNumber();
 
     var self = this;
@@ -266,10 +268,9 @@ phina.define('MainScene', {
       var question = rnd1 + ' - ' + rnd2;
       this.answer = rnd1 - rnd2;
     } else if (this.operationType === MULTIPLICATION) {
-      var rnd1 = Random.randint(min, max);
-      var rnd2 = Random.randint(min, 9);
-      var question = rnd1 + ' × ' + rnd2;
-      this.answer = rnd1 * rnd2;
+      var choice = this.multiplication.getQuestion();
+      var question = choice.q;
+      this.answer = choice.a;
     } else if (this.operationType === MIX) {
       var operationType = Random.randint(0, 2);
 
@@ -328,6 +329,74 @@ phina.define('ResultScene', {
     this.onpointstart = function() {
       self.exit();
     };
+  }
+});
+
+phina.define('Multiplication', {
+  init: function () {
+    this.questions = [
+      { q: '1 × 1', a: 1 }, { q: '1 × 2', a: 2 }, { q: '1 × 3', a: 3 },
+      { q: '1 × 4', a: 4 }, { q: '1 × 5', a: 5 }, { q: '1 × 6', a: 6 },
+      { q: '1 × 7', a: 7 }, { q: '1 × 8', a: 8 }, { q: '1 × 9', a: 9 },
+      { q: '2 × 1', a: 2 }, { q: '2 × 2', a: 4 }, { q: '2 × 3', a: 6 },
+      { q: '2 × 4', a: 8 }, { q: '2 × 5', a: 10 }, { q: '2 × 6', a: 12 },
+      { q: '2 × 7', a: 14 }, { q: '2 × 8', a: 16 }, { q: '2 × 9', a: 18 },
+      { q: '3 × 1', a: 3 }, { q: '3 × 2', a: 6 }, { q: '3 × 3', a: 9 },
+      { q: '3 × 4', a: 12 }, { q: '3 × 5', a: 15 }, { q: '3 × 6', a: 18 },
+      { q: '3 × 7', a: 21 }, { q: '3 × 8', a: 24 }, { q: '3 × 9', a: 27 },
+      { q: '4 × 1', a: 4 }, { q: '4 × 2', a: 8 }, { q: '4 × 3', a: 12 },
+      { q: '4 × 4', a: 16 }, { q: '4 × 5', a: 20 }, { q: '4 × 6', a: 24 },
+      { q: '4 × 7', a: 28 }, { q: '4 × 8', a: 32 }, { q: '4 × 9', a: 36 },
+      { q: '5 × 1', a: 5 }, { q: '5 × 2', a: 10 }, { q: '5 × 3', a: 15 },
+      { q: '5 × 4', a: 20 }, { q: '5 × 5', a: 25 }, { q: '5 × 6', a: 30 },
+      { q: '5 × 7', a: 35 }, { q: '5 × 8', a: 40 }, { q: '5 × 9', a: 45 },
+      { q: '6 × 1', a: 6 }, { q: '6 × 2', a: 12 }, { q: '6 × 3', a: 18 },
+      { q: '6 × 4', a: 24 }, { q: '6 × 5', a: 30 }, { q: '6 × 6', a: 36 },
+      { q: '6 × 7', a: 42 }, { q: '6 × 8', a: 48 }, { q: '6 × 9', a: 54 },
+      { q: '7 × 1', a: 7 }, { q: '7 × 2', a: 14 }, { q: '7 × 3', a: 21 },
+      { q: '7 × 4', a: 28 }, { q: '7 × 5', a: 35 }, { q: '7 × 6', a: 42 },
+      { q: '7 × 7', a: 49 }, { q: '7 × 8', a: 56 }, { q: '7 × 9', a: 63 },
+      { q: '8 × 1', a: 8 }, { q: '8 × 2', a: 16 }, { q: '8 × 3', a: 24 },
+      { q: '8 × 4', a: 32 }, { q: '8 × 5', a: 40 }, { q: '8 × 6', a: 48 },
+      { q: '8 × 7', a: 56 }, { q: '8 × 8', a: 64 }, { q: '8 × 9', a: 72 },
+      { q: '9 × 1', a: 9 }, { q: '9 × 2', a: 18 }, { q: '9 × 3', a: 27 },
+      { q: '9 × 4', a: 36 }, { q: '9 × 5', a: 45 }, { q: '9 × 6', a: 54 },
+      { q: '9 × 7', a: 63 }, { q: '9 × 8', a: 72 }, { q: '9 × 9', a: 81 },
+    ];
+
+    this.shuffle();
+  },
+
+  shuffle: function () {
+    for (i = this.questions.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = this.questions[i];
+      this.questions[i] = this.questions[j];
+      this.questions[j] = tmp;
+    }
+
+    this.pointer = 0;
+    this.needShuffle = false;
+  },
+
+  getQuestion: function () {
+    if (this.needShuffle) {
+      this.shuffle();
+    }
+
+    var question = this.questions[this.pointer];
+
+    this.next();
+
+    return question;
+  },
+
+  next: function () {
+    this.pointer++;
+
+    if ((this.pointer % this.questions.length) === 0) {
+      this.needShuffle = true;
+    }
   }
 });
 
