@@ -144,17 +144,17 @@ phina.define('TitleScene', {
       self.operationType = MIX;
     }
 
-    // levelBtn.onpointstart = function() {
-    //   if (self.level === LEVEL_1) {
-    //     self.level = LEVEL_2;
-    //     this.text = LEVEL_TEXT_2;
-    //     this.fill = COLOR_RED;
-    //   } else {
-    //     self.level = LEVEL_1;
-    //     this.text = LEVEL_TEXT_1;
-    //     this.fill = COLOR_YELLOW;
-    //   }
-    // };
+    levelBtn.onpointstart = function() {
+      if (self.level === LEVEL_1) {
+        self.level = LEVEL_2;
+        this.text = LEVEL_TEXT_2;
+        this.fill = COLOR_RED;
+      } else {
+        self.level = LEVEL_1;
+        this.text = LEVEL_TEXT_1;
+        this.fill = COLOR_YELLOW;
+      }
+    };
 
     startBtn.onpointstart = function() {
       self.exit({

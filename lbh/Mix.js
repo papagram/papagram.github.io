@@ -4,9 +4,9 @@ phina.define('Mix', {
     questions: [],
   
     init: function (params) {
-        var additionQuestions = Addition().questions;
-        var substractionQuestions = Substraction().questions;
-        var multiplicationQuestions = Multiplication().questions;
+        var additionQuestions = Addition(params).questions;
+        var substractionQuestions = Substraction(params).questions;
+        var multiplicationQuestions = Multiplication(params).questions;
 
         var merged = [];
         merged = additionQuestions.concat(substractionQuestions);
