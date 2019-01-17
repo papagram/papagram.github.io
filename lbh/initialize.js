@@ -1,6 +1,6 @@
 phina.globalize();
 
-const APP_NAME = '答えは待たない';
+const APP_NAME = 'フラッシュ暗算';
 const QUESTION_TIME = 1.5 * 1000;
 const ANSWER_TIME = 1.5 * 1000;
 const ADDITION = 0;
