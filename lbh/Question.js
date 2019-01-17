@@ -14,7 +14,7 @@ phina.define('Question', {
             this.shuffle();
         }
 
-        var question = this.questions[this.pointer];
+        var question = this.questions.at(this.pointer);
 
         this.next();
 
