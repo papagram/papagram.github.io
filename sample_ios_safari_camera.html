@@ -2,47 +2,111 @@
 <html>
 <head>
     <meta charset="UTF-8" />
-    <title>Video</title>
+    <title>サンプルQRコードリーダー</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
         body {
             margin: 0;
             background: #000;
+            padding-bottom: 130px;
         }
 
-        #video {
+        #player {
             display: block;
             width: 100%;
+        }
+
+        #snapshot {
+            margin-top: 500px;
         }
     </style>
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 </head>
 <body>
-    <video id="video" autoplay playsinline></video>
+    <header class="sticky-top bg-dark p-2">
+        <div class="text-white text-center"><strong>QRコード読取</strong></div>
+    </header>
+
+    <main class="container">
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="mt-2">
+                    <video id="player" autoplay playsinline></video>
+                    <canvas id="snapshot" width="1280" height="1024"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="fixed-bottom bg-light">
+        <div class="d-flex justify-content-center bg-white">
+            <a href="http://192.168.10.2:8888/reception/participants/?party_id=1>" class="btn btn-link">参加者一覧</a>
+        </div>
+    </footer>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script src="/js/vendor/jsQR.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
     <script>
-        var medias = {
-            audio : false,
-            video : {
-                facingMode : {
-                    exact : "environment"
-                }
+        if (navigator.userAgent.match(/(iPhone|iPad|iPod|Android)/i)) {
+            if (!navigator.mediaDevices) {
+                alert('カメラを利用できません。');
+            } else {
+                var player = document.getElementById('player'),
+                snapshotCanvas = document.getElementById('snapshot'),
+                width = window.innerWidth,
+                height = window.innerHeight,
+                constraints = {
+                    audio : false,
+                    video : {
+                        facingMode : {
+                            exact : 'environment'
+                        }
+                    }
+                },
+                promise = navigator.mediaDevices.getUserMedia(constraints);
+
+                var handleSuccess = function(stream) {
+                    player.srcObject = stream;
+                    startScan(function(scanResult) {
+                        // このページの呼び出し元に読み取り結果を返す
+                    });
+                };
+
+                var handleError = function(err) {
+                    alert(err);
+                };
+
+                let startScan = function(callback) {
+                    var canvasContext = snapshotCanvas.getContext("2d");
+                    // 500ms間隔でスナップショットを取得し、QRコードの読み取りを行う
+                    var intervalHandler = setInterval(function() {
+                        canvasContext.drawImage(player, 0, 0, width, height);
+                        var imageData = canvasContext.getImageData(0, 0, width, height);
+                        var scanResult = jsQR(imageData.data, imageData.width, imageData.height);
+
+                        if (scanResult) {
+                            clearInterval(intervalHandler);
+                            location.href = scanResult.data;
+
+                            if (callback) {
+                                callback(scanResult);
+                            }
+                        }
+                    }, 250)
+                };
+
+                promise.then(handleSuccess)
+                    .catch(handleError);
             }
-        };
-        var video = document.getElementById("video");
-        var promise = navigator.mediaDevices.getUserMedia(medias);
-
-        promise.then(successCallback)
-            .then(errorCallback);
-
-        function successCallback(stream) {
-            video.srcObject = stream;
-        };
-
-        function errorCallback(err) {
-            alert(err);
-        };
+        } else {
+            alert('PCで起動しようとしています。');
+        }
     </script>
 </body>
 </html>
