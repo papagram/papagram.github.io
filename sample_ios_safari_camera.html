@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Video</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+        }
+
+        #video {
+            display: block;
+            width: 100%;
+        }
+    </style>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+</head>
+<body>
+    <video id="video" autoplay playsinline></video>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/es6-promise@4/dist/es6-promise.auto.min.js"></script>
+    <script>
+        var medias = {
+            audio : false,
+            video : {
+                facingMode : {
+                    exact : "environment"
+                }
+            }
+        };
+        var video = document.getElementById("video");
+        var promise = navigator.mediaDevices.getUserMedia(medias);
+
+        promise.then(successCallback)
+            .then(errorCallback);
+
+        function successCallback(stream) {
+            video.srcObject = stream;
+        };
+
+        function errorCallback(err) {
+            alert(err);
+        };
+    </script>
+</body>
+</html>
